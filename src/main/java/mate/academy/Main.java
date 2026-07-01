@@ -15,13 +15,14 @@ public class Main {
         CompletableFuture<?>[] futures = new CompletableFuture[userIds.length];
 
         for (int i = 0; i < userIds.length; i++) {
-            String userId = userIds[i];
-            futures[i] = asyncRequestProcessor.processRequest(userId)
-                    .thenAccept(userData -> System.out.println("Processed: " + userData));
+            futures[i] = asyncRequestProcessor.processRequest(userIds[i]);
         }
 
-        // Wait for all futures to complete
-        CompletableFuture.allOf(futures).join();
+        for (CompletableFuture<UserData> future : (CompletableFuture<UserData>[]) futures) {
+            UserData result = future.join();
+            System.out.println("Processed: " + result);
+        }
+
         executor.shutdown();
     }
 }
